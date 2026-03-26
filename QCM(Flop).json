@@ -1,0 +1,156 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "guildIds": [
+          "1483760986199687168"
+        ],
+        "channelIds": [
+          "1483760987000668213"
+        ],
+        "value": "!qcm",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-discord-trigger.discordTrigger",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -112
+      ],
+      "id": "2adb314c-94b3-4030-a301-6752f280c296",
+      "name": "Discord Trigger1",
+      "credentials": {
+        "discordBotTriggerApi": {
+          "id": "2vECaOFi3sZofsyF",
+          "name": "Discord Bot Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=\"https://quizapi.io/api/v1/questions?limit=7&apiKey=qa_sk_8fa9589eba0c0e130c589d42f83dd7c9c2b964f8&category={{ $json.category }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        672,
+        -112
+      ],
+      "id": "182276ac-d3fb-4cc4-8740-2034c1e38a88",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  const questions = item.json;\n  const text = questions.map(q => {\n    const choices = Object.values(q.answers).filter(a => a !== null);\n    return `**Q:** ${q.question}\\n${choices.map((c,i) => `${String.fromCharCode(65+i)}. ${c}`).join('\\n')}`;\n  }).join('\\n\\n');\n  return { json: { content: text } };\n});"
+      },
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        864,
+        -112
+      ],
+      "id": "c58a38b0-4a80-44ee-954b-be1bb490fc3c",
+      "name": "Format Quiz for Discord"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1483760986199687168",
+          "mode": "list",
+          "cachedResultName": "FEURLAND",
+          "cachedResultUrl": "https://discord.com/channels/1483760986199687168"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1483760987000668213",
+          "mode": "list",
+          "cachedResultName": "général",
+          "cachedResultUrl": "https://discord.com/channels/1483760986199687168/1483760987000668213"
+        },
+        "content": "={{$json[\"content\"]}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        -112
+      ],
+      "id": "ba48d9b5-53aa-45d6-8660-f6cf75254e2e",
+      "name": "Send a message1",
+      "webhookId": "c675d3df-5a21-42cf-997c-e018c1a30f53",
+      "credentials": {
+        "discordBotApi": {
+          "id": "s7L5BLkxuV43gGxP",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nreturn items.map(item => {\n  const msg = item.json[\"content\"]; // \"!qcm film\"\n  const category = msg.replace(/^!qcm\\s+/i, \"\"); // supprime \"!qcm \"\n  item.json[\"category\"] = category;\n  return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        -112
+      ],
+      "id": "27277113-0380-40e7-8be0-44852cbd9ef4",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "connections": {
+    "Discord Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Format Quiz for Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Quiz for Discord": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "ad5229d41509818b34a6e78c53c953d58e54ab3cafdcc5d8dd5ee6e540f5eeca"
+  }
+}

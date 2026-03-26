@@ -1,0 +1,168 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.weatherapi.com/v1/forecast.json?key=76b3f4bcad0e4def8f784951261903&q=Nice&",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -192,
+        -16
+      ],
+      "id": "77008216-10cc-4da7-ab23-1e0c0c8eedc7",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.location.name }}{{ $json.forecast.forecastday[0].day.mintemp_c }}{{ $json.forecast.forecastday[0].day.maxtemp_c }}{{ $json.forecast.forecastday[0].day.condition.text }}",
+        "options": {
+          "systemMessage": "Donne moi la météo puis comment m'habiller en fonction"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        16,
+        -16
+      ],
+      "id": "a754e913-7daa-4d4a-804b-47f7242e2afe",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "moonshotai/kimi-k2-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        16,
+        160
+      ],
+      "id": "0d4b1895-2c35-4ed3-92b0-cb250525565d",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "OSWzlR490j4vknat",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1483760986199687168",
+          "mode": "list",
+          "cachedResultName": "FEURLAND",
+          "cachedResultUrl": "https://discord.com/channels/1483760986199687168"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1483760987000668213",
+          "mode": "list",
+          "cachedResultName": "général",
+          "cachedResultUrl": "https://discord.com/channels/1483760986199687168/1483760987000668213"
+        },
+        "content": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        368,
+        -16
+      ],
+      "id": "cd0b3dff-e4cf-4ede-b774-190fbcbf8756",
+      "name": "Send a message",
+      "webhookId": "6af207ce-a7b8-4ab0-ac20-b2b21de5a3dc",
+      "credentials": {
+        "discordBotApi": {
+          "id": "s7L5BLkxuV43gGxP",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "guildIds": [
+          "1483760986199687168"
+        ],
+        "channelIds": [
+          "1483760987000668213"
+        ],
+        "value": "!weather",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-discord-trigger.discordTrigger",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        -16
+      ],
+      "id": "3379d005-1b77-46fc-8ea2-bd79cb36a20c",
+      "name": "Discord Trigger",
+      "credentials": {
+        "discordBotTriggerApi": {
+          "id": "2vECaOFi3sZofsyF",
+          "name": "Discord Bot Trigger account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ad5229d41509818b34a6e78c53c953d58e54ab3cafdcc5d8dd5ee6e540f5eeca"
+  }
+}

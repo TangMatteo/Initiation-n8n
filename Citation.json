@@ -1,0 +1,136 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e325d87a-3740-4440-86e5-9fd2a2015302",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=",
+        "options": {
+          "systemMessage": "Ecris une citation entre guillemets et sa provenance en dessous\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a9a4db4d-9bcb-4405-aeb3-c52928e53f96",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "moonshotai/kimi-k2-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        208,
+        160
+      ],
+      "id": "1492aacc-c06b-413e-97c4-95d02114d229",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "OSWzlR490j4vknat",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1483760986199687168",
+          "mode": "list",
+          "cachedResultName": "FEURLAND",
+          "cachedResultUrl": "https://discord.com/channels/1483760986199687168"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1483760987000668213",
+          "mode": "list",
+          "cachedResultName": "général",
+          "cachedResultUrl": "https://discord.com/channels/1483760986199687168/1483760987000668213"
+        },
+        "content": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "f240d16c-8a17-4478-975f-c51f1066b44b",
+      "name": "Send a message",
+      "webhookId": "9a04aaa7-4028-49f9-8721-5f611cd988d7",
+      "credentials": {
+        "discordBotApi": {
+          "id": "s7L5BLkxuV43gGxP",
+          "name": "Discord Bot account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ad5229d41509818b34a6e78c53c953d58e54ab3cafdcc5d8dd5ee6e540f5eeca"
+  }
+}

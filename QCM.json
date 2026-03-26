@@ -1,0 +1,143 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "guildIds": [
+          "1483760986199687168"
+        ],
+        "channelIds": [
+          "1483760987000668213"
+        ],
+        "value": "!qcm",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-discord-trigger.discordTrigger",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -160
+      ],
+      "id": "a0c3e138-346b-41e4-8846-dcafb758a7ae",
+      "name": "Discord Trigger1",
+      "credentials": {
+        "discordBotTriggerApi": {
+          "id": "2vECaOFi3sZofsyF",
+          "name": "Discord Bot Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "moonshotai/kimi-k2-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        48,
+        0
+      ],
+      "id": "06aff171-76a6-459f-bdf0-581dbd81ef9f",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "OSWzlR490j4vknat",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.content }}",
+        "options": {
+          "systemMessage": "Fais moi un qcm avec 7 questions et 4 reponse par questions sur le thème abordé.\nPrésentation :\n- thème\n- questions"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        64,
+        -160
+      ],
+      "id": "3748e749-1363-43c6-8e10-83d2f859c4f6",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1483760986199687168",
+          "mode": "list",
+          "cachedResultName": "FEURLAND",
+          "cachedResultUrl": "https://discord.com/channels/1483760986199687168"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1483760987000668213",
+          "mode": "list",
+          "cachedResultName": "général",
+          "cachedResultUrl": "https://discord.com/channels/1483760986199687168/1483760987000668213"
+        },
+        "content": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        400,
+        -160
+      ],
+      "id": "64601f78-3bbd-4b48-b7e9-7497683209ef",
+      "name": "Send a message1",
+      "webhookId": "c675d3df-5a21-42cf-997c-e018c1a30f53",
+      "credentials": {
+        "discordBotApi": {
+          "id": "s7L5BLkxuV43gGxP",
+          "name": "Discord Bot account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Discord Trigger1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ad5229d41509818b34a6e78c53c953d58e54ab3cafdcc5d8dd5ee6e540f5eeca"
+  }
+}
